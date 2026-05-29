@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Spesial Buat Kamu ❤️</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', 'Segoe UI', sans-serif; }
+        
+        body { 
+            background-image: url('background/gambar.jpeg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+            color: #4a5568; 
+            position: relative; 
+        }
+        
+        canvas#heartCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+        .card { background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(6px); padding: 35px 25px; border-radius: 25px; border: 2px solid #ff8fa3; text-align: center; max-width: 450px; width: 90%; position: relative; z-index: 10; display: none; box-shadow: 0 15px 35px rgba(255, 77, 109, 0.2); transform: scale(0.9); opacity: 0; transition: all 0.5s ease-in-out; }
+        .card.active { display: block; transform: scale(1); opacity: 1; }
+        
+        .card-game { max-width: 480px; width: 95%; padding: 20px 15px; }
+
+        h1 { color: #ff4d6d; font-size: 24px; margin-bottom: 20px; }
+        p { color: #4a5568; line-height: 1.6; margin-bottom: 25px; font-size: 15px; font-weight: 500; }
+        
+        input[type="date"] { padding: 12px; border-radius: 10px; border: 2px solid #ffb3c6; width: 100%; margin-bottom: 20px; background: white; color: #4a5568; font-size: 16px; text-align: center; outline: none; }
+        button { padding: 12px 30px; border: none; border-radius: 30px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; background: linear-gradient(45deg, #ff4d6d, #ff758f); color: white; box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3); width: 100%; max-width: 220px; margin: 10px auto; display: block; }
+        button:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 77, 109, 0.5); }
+        .btn-music { background: linear-gradient(45deg, #ff8fa3, #ff4d6d); margin-bottom: 15px; }
+
+        .btn-container { display: flex; justify-content: center; gap: 15px; position: relative; height: 60px; margin-top: 10px; }
+        .btn-yes { position: absolute; left: 20px; width: 120px; }
+        .btn-no { position: absolute; right: 20px; width: 120px; background: #a0aec0; box-shadow: none; transition: 0.1s; }
+
+        .real-photo { width: 100%; height: 230px; border-radius: 15px; object-fit: cover; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 2px solid #ffb3c6; }
+        .stiker { width: 150px; height: 150px; margin: 0 auto 15px auto; display: block; object-fit: contain; }
+
+        .love-list { text-align: left; background: #fff5f7; padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #ffb3c6; }
+        .love-list li { list-style: none; margin-bottom: 10px; font-size: 14px; color: #ff4d6d; display: flex; align-items: center; font-weight: 500; }
+        .love-list li::before { content: "🌸"; margin-right: 10px; }
+
+        .countdown { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .time-box { background: linear-gradient(135deg, #ffeedd, #ffe5ec); border: 1px solid #ffb3c6; padding: 10px; border-radius: 12px; min-width: 70px; }
+        .time-box span { display: block; font-size: 22px; font-weight: bold; color: #ff4d6d; }
+        .time-box label { font-size: 11px; color: #718096; font-weight: bold; }
+
+        .cake { position: relative; width: 150px; height: 120px; margin: 30px auto; }
+        .plate { width: 180px; height: 10px; background: #e2e8f0; border-radius: 10px; position: absolute; bottom: 0; left: -15px; }
+        .layer { width: 150px; height: 40px; background: #ff8fa3; border-radius: 10px 10px 0 0; position: absolute; bottom: 10px; }
+        .layer-2 { width: 130px; height: 35px; background: #ffb3c6; border-radius: 10px 10px 0 0; position: absolute; bottom: 50px; left: 10px; }
+        .layer-3 { width: 100px; height: 30px; background: #fff5f7; border-radius: 10px 10px 0 0; position: absolute; bottom: 85px; left: 25px; }
+        .candle { width: 8px; height: 25px; background: #f6ad55; position: absolute; bottom: 115px; left: 71px; border-radius: 3px; }
+        .flame { width: 12px; height: 18px; background: #e53e3e; border-radius: 50%; position: absolute; bottom: 140px; left: 69px; animation: jitter 0.5s infinite alternate; background-image: radial-gradient(#fff, #f6ad55, #e53e3e); }
+        @keyframes jitter { 0% { transform: scale(1) rotate(2deg); } 100% { transform: scale(1.1) rotate(-2deg); } }
+        .scrolling-letter { max-height: 200px; overflow-y: auto; background: #fff5f7; padding: 15px; border-radius: 15px; text-align: left; font-size: 14px; line-height: 1.8; color: #4a5568; border: 1px solid #ffb3c6; margin-bottom: 20px; }
+        
+        #gameCanvas { background: #eef9ff; border: 2px solid #ff8fa3; border-radius: 15px; display: block; width: 100%; max-width: 400px; height: 250px; margin: 0 auto 15px auto; }
+        .game-controls { display: flex; justify-content: center; gap: 30px; margin-top: 15px; margin-bottom: 10px; }
+        .ctrl-btn { width: 80px; height: 55px; background: linear-gradient(135deg, #ff758f, #ff4d6d); border: none; border-radius: 15px; color: white; font-size: 26px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3); touch-action: manipulation; }
+        .btn-finish-game { background: linear-gradient(45deg, #2a9d8f, #264653); box-shadow: 0 5px 15px rgba(42, 157, 143, 0.3); }
+    </style>
+</head>
+<body>
+    <canvas id="heartCanvas"></canvas>
+    <audio id="bgm" src="music/Empat mata - d'bagindas (speed up).mp3" loop></audio>
+
+    <!-- HALAMAN 1A -->
+    <div class="card active" id="p1">
+        <h1>Hallow cantikk... ✨</h1>
+        <img src="gif/cat-meme-funny.gif" class="stiker" alt="Lucu">
+        <p>Hidupiinn musicc nya,biar pas bacanya sambil jogeddd🎶</p>
+        <button class="btn-music" onclick="playMusicAndNext()">🎵 Putar Musik</button>
+    </div>
+
+    <!-- HALAMAN 1B -->
+    <div class="card" id="p2">
+        <h1>Yeayy, Musik On! 🎧</h1>
+        <p>I have something for your special day,are you ready ?</p>
+        <button onclick="nextPage(3)">lets go🫰</button>
+    </div>
+
+    <!-- HALAMAN 3 -->
+    <div class="card" id="p3">
+        <h1>Keamanan Tahap 1 🔐</h1>
+        <p> masukan bulan, tanggal, dan tahun lahir kamu,untuk Verifikasi ya sayangg💕</p>
+        <input type="date" id="birthdate">
+        <button onclick="checkBirthdate()">Verifikasi Tahap 1</button>
+    </div>
+
+    <!-- HALAMAN 4 -->
+    <div class="card" id="p4">
+        <h1>Keamanan Tahap 2 🔑</h1>
+        <p>masukin tanggal jadian kitaa ya💕</p>
+        <input type="date" id="anniversaryDate">
+        <button onclick="checkAnniversary()">Verifikasi Akhir</button>
+    </div>
+
+    <!-- HALAMAN 5 -->
+    <div class="card" id="p5">
+        <h1>Gak Terasa Yaa sayangg ⏳</h1>
+        <p>Waktu berjalan cepet ya mici ,ini adalah waktu yang sudah kita lewati bersama-sama,lama juga ya😭😭</p>
+        <div class="countdown">
+            <div class="time-box"><span id="days">00</span><label>Hari</label></div>
+            <div class="time-box"><span id="hours">00</span><label>Jam</label></div>
+            <div class="time-box"><span id="mins">00</span><label>Menit</label></div>
+            <div class="time-box"><span id="secs">00</span><label>Detik</label></div>
+        </div>
+        <button onclick="nextPage(6)">Lanjut</button>
+    </div>
+
+    <!-- HALAMAN 6 -->
+    <div class="card" id="p6">
+        <h1>THE PERFECT COUPLE📸</h1>
+        <img src="foto/1.jpeg" alt="photo" class="real-photo">
+        <p>Keren yaa foto ini mici,ngliat kamu pose gitu sambil pakai topi cowboyyy aduhhh lucukkkkk😖😖</p>
+        <button onclick="nextPage(7)">Lihat Lagi</button>
+    </div>
+
+    <!-- HALAMAN 7 -->
+    <div class="card" id="p7">
+        <h1>Hal yang aku suka dari mici  ✨</h1>
+        <ul class="love-list">
+            <li>Cara kamu pas mau sesuatu💕</li>
+            <li>Nada suara kamu kalau lagi manja ke aku❤️</li>
+            <li>Cara atau nada kamu pas lagi ngambek💕</li>
+        <li>Pose-Pose imutt kamu dan pose lucuk kamu❤️</li>
+        </ul>
+        <button onclick="nextPage(8)">Ada Lagi?</button>
+    </div>
+
+        <!-- HALAMAN 8 -->
+    <div class="card" id="p8">
+        <h1>Kenapa kamu? 🤔</h1>
+        <p>Bukan karena apa yang kamu punya, tapi karena kenyamanan yang kamu kasih. Kamu selalu bisa jadi tempat pulang terbaik buat aku😍</p>
+        <button onclick="nextPage('10A')">Sentuh Ini</button>
+    </div>
+
+    <!-- HALAMAN 10A -->
+    <div class="card" id="p10A">
+        <h1>Aku Gak Akan Menyerah... 🥺</h1>
+        <p style="font-size: 15px; font-style: italic; line-height: 1.6; margin-bottom: 15px; color: #ff4d6d;">
+            "I have no reason to give up on you even if you show me the worst parts of yourself, I will still be here. I don't care how hard things get or how bad your mood is sometimes, I will still choose you."
+        </p>
+        <p style="font-size: 14px; line-height: 1.6; font-weight: 500; color: #718096; border-top: 1px dashed #ffb3c6; padding-top: 15px;">
+            Artinya: Aku gak punya alasan buat menyerah tentang kamu, bahkan kalau kamu nunjukin sifat terburukmu, aku bakal tetep di sini. Aku gak peduli seberapa berat keadaannya atau seberapa buruk mood kamu kadang-kadang, aku bakal tetep milih kamu.
+        </p>
+        <button onclick="nextPage('10B')">Selanjutnya ❤️</button>
+    </div>
+
+    <!-- HALAMAN 10B -->
+    <div class="card" id="p10B">
+        <h1>Selalu Kamu ✨</h1>
+        <p style="font-size: 15px; font-style: italic; line-height: 1.6; margin-bottom: 15px; color: #ff4d6d;">
+            "I will not love anyone else. It's always been you and it will always be you."
+        </p>
+        <p style="font-size: 14px; line-height: 1.6; font-weight: 500; color: #718096; border-top: 1px dashed #ffb3c6; padding-top: 15px;">
+            Artinya: Aku gak bakal mencintai orang lain. Dari dulu emang selalu kamu, dan bakal selamanya tetep kamu.
+        </p>
+        <button onclick="nextPage(9)">Lanjut Baca Surat </button>
+    </div>
+
+    <!-- HALAMAN 9 -->
+    <div class="card" id="p9">
+        <h1>Dibacaa yaa sayangg💕❤️</h1>
+        <div class="scrolling-letter">
+            <p>Halo Meysi Gracia,Surat ini spesial aku buat untuk hari ulang tahun kamu.Meysi, aku masih ingat banget pas pertama kali ketemu kamu. Kamu bener-bener kayak bidadari buat aku. Dulu, aku cuma bisa ngeliatin kamu dari kejauhan. Jujur, aku gak berani buat deketin kamu, hahahaha. Tapi mungkin karena takdir Allah, akhirnya kita dipertemukan. Dan akhirnya, wanita yang dulunya cuman bisa aku lihat dari kejauhan, sekarang bener-bener menjadi milik aku. Rambut kamu yang panjang, alis kamu, mata kamu yang sipit, hidung kamu yang pesek, bibir kamu yang cantik, leher kamu, badan kamu yang putih, tangan kamu yang lembut, sampai pinggang kamu, semuanya akhirnya bisa jadi milik aku sekarang.Aku ingat awal kita kenal waktu sekolah mengadakan acara. Pas banget aku lagi bawa gitar. Aku gak nyangka sama sekali kalau kamu bakal nyamperin bangku aku untuk minjem gitar. Di situ aku seneng banget karena bisa melihat kamu dari deket. Waktu itu aku bicara dalam hati gini: "Masyaallah, alangke cantik nyo budak ini dari deket. Dari jauh be lah cantik, apo lagi dari deket." Hahaha. Oh iya, itu juga hari pertama kali aku berani ngasih cokelat ke cewek loh! Aku salting dan gugup banget pas ngasihnya.Momen pertama kali kita jalan-jalan juga gak akan pernah aku lupain. Itu pertama kalinya aku bonceng cewek dan bawa cewek jalan-jalan. Seru banget pas kita ke JB, nikmatin udaranya, kena angin sepoi-sepoi di atas motor. Terus kita ngebut-ngebut di JB dan akhirnya... kecelakaan! Bener-bener gak nyangka. Itu pertama kalinya aku kecelakaan motor, mana bawa cewek spek bidadari lagi. Aduh, waktu itu aku takut banget kamu marahin, kamu putusin, atau kamu jauhin aku. Tapi ternyata aman-aman aja, bahkan kamu yang nenangin aku pas kecelakaan. Aslinya waktu itu aku udah mau nangis karena panik, tapi sifat kamu bikin aku tenang.Setelah itu, banyak banget momen pertama kita. Pertama kali ke bioskop sama cewek, makan ke Gacoan, ke mall, ke kafe, dan jalan-jalan muter Palembang naik motor. Pokoknya itu bener-bener momen paling indah dalam hidup aku.Tapi, kita juga pernah lewatin masa sulit. Inget gak pas kita disuruh putus sama Abi aku? Itu bener-bener bikin aku sakit banget. Aku sampai main gak karuan sampe jam 12 malem, bener-bener hilang akal dan hilang perasaan. Aku kira itu adalah akhir dari kisah cinta kita. Aku sempat bingung gimana nanti ke depannya tanpa kamu, tanpa cewek cantik ini lagi di hidup aku. Tapi ternyata, takdir baik masih berpihak sama kita, dan kita masih bersama sampai sekarang.Makasih ya sayang udah mau jadi pasangan aku. Makasih udah mau menerima aku apa adanya, memaafkan semua kesalahan aku, dan selalu sayang sama aku. Makasih udah ngajarin aku banyak hal, dan makasih udah pernah meluk aku. Makasih banyak sayang untuk semuanya.Kamu adalah wanita dan perempuan yang paling aku sayang dan paling aku cintain. Aku nggak mau kehilangan kamu atau jauh dari kamu. Kalau aku pernah mengucapkan kata putus, demi Allah itu BOHONG. Dari lubuk hati yang paling dalam, aku gak pernah berpikir begitu. Aku pengen selalu sama kamu dan menua bersama kamu. Aku nggak peduli badai apa yang menunggu kita di masa depan. Kalau bersamamu, aku yakin kita pasti bisa lewati semuanya, seperti badai-badai yang udah lewat sebelumnya.Diri aku, raga aku, dan tubuh aku selalu ingin bersama kamu. Jadi, kita harus tetep sama-sama ya? Walaupun kadang aku egois dan bilang gak cinta atau gak sayang, sebenernya di hati kecilku, aku masih benar-benar sayang banget sama kamu. Tolong selalu sama aku ya, Sayang.Di hari ulang tahunmu ini, aku juga punya doa dan harapan besar untuk kita. Semoga suatu hari nanti kita bisa berada di satu agama yang sama. Semoga kita bisa berdoa ke Tuhan yang sama, dan merayakan hari besar agama kita bersama-sama. Pasti seru dan bahagia banget rasanya.Selamat ulang tahun, Meysi Gracia. Aku sayang kamu selamanya.</p>
+        </div>
+        <button onclick="nextPage(10)">Lanjut...</button>
+    </div>
+
+    <!-- HALAMAN 10 -->
+    <div class="card" id="p10">
+        <h1>Pertanyaan Penting! 🤨</h1>
+        <p>Apapun masalah atau badai yang muncul kita harus menghadapinya bersama-sama ya</p>
+        <div class="btn-container">
+            <button class="btn-yes" onclick="nextPage('10C');">okee sayangggg😎!</button>
+            <button class="btn-no" id="btnNo" onmouseover="moveNoButton()">Enggak🤪</button>
+        </div>
+    </div>
+
+    <!-- HALAMAN 10C -->
+    <div class="card" id="p10C">
+        <h1>Mau yang mana dulu 🥰</h1>
+        <p>Silakan pilih mau kasih makan atau mau main  ✨</p>
+        <button onclick="nextPage(11); initGame();" style="margin-bottom: 15px;">🐹 Kasih Makan miru</button>
+        <button onclick="nextPage('11A');" style="background: linear-gradient(45deg, #ff8fa3, #ff4d6d);">🎀 Bantu miro main</button>
+    </div>
+
+    <!-- HALAMAN 11 -->
+    <div class="card card-game" id="p11">
+        <h1>Bantu Hamster Makan! 🌻</h1>
+        <p style="font-size: 13px; color: #718096; margin-bottom: 10px;">kasih miru kuaci biar makin endut .</p>
+        <p style="font-size: 16px; color: #ff4d6d; font-weight: bold; margin-bottom: 10px;" id="scoreDisplay">Skor Saat Ini: 0</p>
+        <canvas id="gameCanvas" width="400" height="250"></canvas>
+        <div class="game-controls">
+            <button class="ctrl-btn" onclick="moveBunnyLeft()">◀</button>
+            <button class="ctrl-btn" onclick="moveBunnyRight()">▶</button>
+        </div>
+        <button class="btn-finish-game" onclick="finishGame()">Selesai Bermain</button>
+    </div>
+
+    <!-- HALAMAN 11A -->
+    <div class="card card-game" id="p11A">
+        <h1>Bantu miroo mainn ya ! 🐹🎀</h1>
+        <p style="font-size: 13px; color: #718096; margin-bottom: 10px;">Ketuk kotak game (atau tekan spasi) untuk membuat pacar hamster melompat melewati rintangan!</p>
+        <p style="font-size: 16px; color: #ff4d6d; font-weight: bold; margin-bottom: 10px;" id="birdScoreDisplay">Skor Saat Ini: 0</p>
+        <canvas id="birdCanvas" width="400" height="250" style="background: #eef9ff; border: 2px solid #ff8fa3; border-radius: 15px; display: block; width: 100%; max-width: 400px; height: 250px; margin: 0 auto 15px auto;"></canvas>
+        <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 15px;">
+            <button onclick="nextPage('10C'); clearInterval(birdInterval);" style="background: #a0aec0; margin: 0; max-width: 120px;">⬅ Kembali</button>
+            <button class="btn-finish-game" onclick="finishBirdGame()" style="margin: 0; max-width: 150px;">Selesai Bermain</button>
+        </div>
+    </div>
+
+    <!-- HALAMAN 12 -->
+    <div class="card" id="p12">
+        <h1>Make A Wish 🎂</h1>
+        <p>Sebelum lanjut, ayo pejamkan mata sebentar dan sebutkan doa atau keinginan kamu yang plaing besar </p>
+        <div class="cake">
+            <div class="flame"></div>
+            <div class="candle"></div>
+            <div class="layer layer-3"></div>
+            <div class="layer layer-2"></div>
+            <div class="layer"></div>
+            <div class="plate"></div>
+        </div>
+        <button onclick="nextPage(13)">Tiup Lilin & Lanjut</button>
+    </div>
+
+    <!-- HALAMAN 13 -->
+    <div class="card" id="p13">
+        <h1>HAPPY BIRTHDAY SAYANG! 🎉🎂</h1>
+        <img src="foto/2.jpeg" alt="Ulang Tahun" class="real-photo">
+        <p>Selamat ulang tahun sayanggg ! Semoga semua impianmu tercapai, dilancarkan rezekinya, dan bahagia selalu. Aku sayang kamu hari ini, esok, dan selamanya ❤️</p>
+        <button onclick="nextPage(5)" style="background: linear-gradient(45deg, #a0aec0, #718096); margin-top: 15px;"> Kembali  ✨</button>
+
+    </div>
+
+        <script>
+        const audio = document.getElementById('bgm');
+        function playMusicAndNext() { audio.play().catch(() => {}); nextPage(2); }
+        
+        function nextPage(num) { 
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active')); 
+            document.getElementById('p' + num).classList.add('active'); 
+            if (num != 1) { audio.play().catch(() => {}); } 
+            if (num === '11A') { window.initBirdGame(); }
+        }
+        
+        function checkBirthdate() {
+            const input = document.getElementById('birthdate').value;
+            if(input === "2008-05-30") { nextPage(4); }
+            else if (input === "") { alert("Masukkan tanggal lahirmu dulu dong sayang!"); }
+            else { alert("Eh salah, kamu beneran pacarku bukan sih? 🤨"); }
+        }
+
+        function checkAnniversary() {
+            const input = document.getElementById('anniversaryDate').value;
+            if(input === "2024-09-01") { nextPage(5); startCountdown(); }
+            else if (input === "") { alert("Tanggal jadian kita diisi dulu dong!"); }
+            else { alert("Masa tanggal jadian kita lupa? Keterlaluan! 😢"); }
+        }
+        
+        function startCountdown() {
+            const startDate = new Date("2024-09-01T00:00:00").getTime();
+            setInterval(() => {
+                const now = new Date().getTime(); const diff = now - startDate;
+                document.getElementById('days').innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                document.getElementById('hours').innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById('mins').innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                document.getElementById('secs').innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+            }, 1000);
+        }
+        
+        function moveNoButton() { 
+            const btn = document.getElementById('btnNo'); 
+            const x = Math.floor(Math.random() * 80) - 40; 
+            const y = Math.floor(Math.random() * 80) - 40; 
+            btn.style.transform = `translate(${x}px, ${y}px)`; 
+        }
+
+        // LOGIKA GAME 1 (HAMSTER KASIH MAKAN)
+        const gCanvas = document.getElementById('gameCanvas'); const gCtx = gCanvas.getContext('2d');
+        let gameInterval, score = 0; 
+        let bunny = { x: 185, y: 205, width: 35, height: 35, speed: 25 }; 
+        let sunflowerSeed = { x: Math.random() * 360, y: 0, size: 25, speed: 3 };
+
+        function initGame() { score = 0; bunny.x = 185; sunflowerSeed.y = 0; sunflowerSeed.x = Math.random() * 360; document.getElementById('scoreDisplay').innerText = "Skor Saat Ini: " + score; if(gameInterval) clearInterval(gameInterval); gameInterval = setInterval(updateGame, 1000 / 60); }
+        
+        function updateGame() {
+            sunflowerSeed.y += sunflowerSeed.speed; if (sunflowerSeed.y > gCanvas.height) { sunflowerSeed.y = 0; sunflowerSeed.x = Math.random() * 360; }
+            if (sunflowerSeed.y + 15 >= bunny.y && sunflowerSeed.x + 15 >= bunny.x && sunflowerSeed.x <= bunny.x + bunny.width) {
+                score++; document.getElementById('scoreDisplay').innerText = "Skor Saat Ini: " + score; sunflowerSeed.y = 0; sunflowerSeed.x = Math.random() * 360;
+                if(score % 5 === 0) { sunflowerSeed.speed += 0.5; }
+            }
+            gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height); gCtx.font = "28px Arial"; 
+            gCtx.fillText("🐹", bunny.x, bunny.y + 26); 
+            gCtx.fillText("🌻", sunflowerSeed.x, sunflowerSeed.y + 16); 
+        }
+        
+        function finishGame() { 
+            clearInterval(gameInterval); 
+            alert("Wah hebat banget! Total skor kamu: " + score + " ❤️"); 
+            nextPage('10C'); 
+        }
+        
+        function moveBunnyLeft() { if(bunny.x > 0) bunny.x -= bunny.speed; }
+        function moveBunnyRight() { if(bunny.x < gCanvas.width - bunny.width) bunny.x += bunny.speed; }
+        document.addEventListener('keydown', function(e) { if(e.key === "ArrowLeft") moveBunnyLeft(); if(e.key === "ArrowRight") moveBunnyRight(); });
+
+        // LOGIKA ANIMASI LATAR BELAKANG HATI
+        const canvas = document.getElementById('heartCanvas'); const ctx = canvas.getContext('2d'); let particles = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        class Particle {
+            constructor() { this.x = Math.random() * canvas.width; this.y = canvas.height + Math.random() * 100; this.size = Math.random() * 12 + 6; this.speed = Math.random() * 1.5 + 0.5; this.opacity = Math.random() * 0.5 + 0.2; }
+            update() { this.y -= this.speed; if (this.y < -20) { this.y = canvas.height + 20; this.x = Math.random() * canvas.width; } }
+            draw() { ctx.save(); ctx.globalAlpha = this.opacity; ctx.font = `${this.size}px Arial`; ctx.fillText("❤️", this.x, this.y); ctx.restore(); }
+        }
+        function initParticles() { for (let i = 0; i < 25; i++) { particles.push(new Particle()); } }
+        function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
+        initParticles(); animate();
+
+        // LOGIKA GAME KEDUA (FLAPPY HAMSTER)
+        const bCanvas = document.getElementById('birdCanvas'); const bCtx = bCanvas.getContext('2d');
+        let birdInterval, birdScore = 0;
+        let bird = { x: 50, y: 100, velocity: 0, gravity: 0.4, jump: -6, size: 25 };
+        let pipes = []; let pipeSpeed = 2; let pipeSpawnTimer = 0;
+
+        window.initBirdGame = function() {
+            birdScore = 0; bird.y = 100; bird.velocity = 0; pipes = []; pipeSpawnTimer = 0;
+            document.getElementById('birdScoreDisplay').innerText = "Skor Saat Ini: " + birdScore;
+            if(birdInterval) clearInterval(birdInterval);
+            birdInterval = setInterval(updateBirdGame, 1000 / 60);
+        }
+
+        function updateBirdGame() {
+            bird.velocity += bird.gravity; bird.y += bird.velocity;
+            if (bird.y > bCanvas.height - bird.size) { bird.y = bCanvas.height - bird.size; bird.velocity = 0; }
+            if (bird.y < 0) { bird.y = 0; bird.velocity = 0; }
+
+            pipeSpawnTimer++;
+            if (pipeSpawnTimer >= 90) {
+                let gap = 95; let minHeight = 30; let maxHeight = bCanvas.height - gap - minHeight;
+                let height = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+                pipes.push({ x: bCanvas.width, top: height, bottom: bCanvas.height - height - gap, passed: false });
+                pipeSpawnTimer = 0;
+            }
+
+            bCtx.clearRect(0, 0, bCanvas.width, bCanvas.height);
+            bCtx.font = "30px Arial"; 
+            bCtx.fillText("🐹", bird.x, bird.y + 20); 
+
+            pipes.forEach((pipe, index) => {
+                pipe.x -= pipeSpeed;
+                bCtx.fillStyle = "#ff8fa3"; 
+                bCtx.fillRect(pipe.x, 0, 40, pipe.top);
+                bCtx.fillRect(pipe.x, bCanvas.height - pipe.bottom, 40, pipe.bottom);
+
+                if (bird.x + bird.size > pipe.x && bird.x < pipe.x + 40 && (bird.y < pipe.top || bird.y + bird.size > bCanvas.height - pipe.bottom)) {
+                    window.initBirdGame(); 
+                }
+                if (!pipe.passed && pipe.x + 40 < bird.x) {
+                    birdScore++; pipe.passed = true;
+                    document.getElementById('birdScoreDisplay').innerText = "Skor Saat Ini: " + birdScore;
+                }
+                if (pipe.x + 40 < 0) pipes.splice(index, 1);
+            });
+        }
+
+        function birdJump() { bird.velocity = bird.jump; }
+        bCanvas.addEventListener('click', birdJump); bCanvas.addEventListener('touchstart', birdJump);
+        document.addEventListener('keydown', function(e) { if(e.key === " " || e.key === "Spacebar") { birdJump(); e.preventDefault(); } });
+
+        function finishBirdGame() { 
+            clearInterval(birdInterval); 
+            alert("Keren banget! Skor pacar hamster kamu: " + birdScore + " 🎉"); 
+            nextPage(12); 
+        }
+    </script>
+</body>
+</html>
